@@ -12,7 +12,7 @@ import {
 } from "@carbon/react";
 
 // Main application component containing the login and sign-up page.
-const LoginPage = () => {
+const LoginPage = ({ onLogin }) => {
   // State to manage the form's mode (login or sign-up)
   const [isLogin, setIsLogin] = useState(true);
   // State for form input values
@@ -23,26 +23,60 @@ const LoginPage = () => {
   const [message, setMessage] = useState(null);
   const [messageKind, setMessageKind] = useState("info");
 
-  // Function to handle form submission
-  const handleSubmit = (event) => {
+  // 🔹 Nuevo handleSubmit con fetch a tu API Flask
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    setMessage(null); // Clear previous messages
+    setMessage(null);
 
-    if (isLogin) {
-      console.log("Datos de inicio de sesión:", { email, password });
-      // Here you would implement your actual login logic (e.g., API call).
-      setMessage("¡Inicio de sesión exitoso!");
-      setMessageKind("success");
-    } else {
-      if (password !== confirmPassword) {
-        setMessage("Error: Las contraseñas no coinciden.");
-        setMessageKind("error");
-        return;
+    try {
+      if (isLogin) {
+        // LOGIN
+        const response = await fetch("http://localhost:5000/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem("token", data.access_token); // guarda el JWT
+          setMessage("¡Inicio de sesión exitoso!");
+          setMessageKind("success");
+          if (onLogin) onLogin();
+        } else {
+          setMessage(data.msg || "Error al iniciar sesión.");
+          setMessageKind("error");
+        }
+      } else {
+        // REGISTER
+        if (password !== confirmPassword) {
+          setMessage("Error: Las contraseñas no coinciden.");
+          setMessageKind("error");
+          return;
+        }
+
+        const response = await fetch("http://localhost:5000/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setMessage("¡Registro exitoso! Ahora puedes iniciar sesión.");
+          setMessageKind("success");
+          setIsLogin(true); // pasa al formulario de login
+        } else {
+          setMessage(data.msg || "Error al registrarse.");
+          setMessageKind("error");
+        }
       }
-      console.log("Datos de registro:", { email, password });
-      // Here you would implement your actual sign-up logic (e.g., API call).
-      setMessage("¡Registro exitoso! Ahora puedes iniciar sesión.");
-      setMessageKind("success");
+    } catch (err) {
+      console.error(err);
+      setMessage("Error de conexión con el servidor.");
+      setMessageKind("error");
     }
   };
 
