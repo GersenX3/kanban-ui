@@ -23,10 +23,21 @@ const LoginPage = ({ onLogin }) => {
   const [message, setMessage] = useState(null);
   const [messageKind, setMessageKind] = useState("info");
 
-  // 🔹 Nuevo handleSubmit con fetch a tu API Flask
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessage(null);
+
+    // ✅ Validación del formato del email
+    if (!validateEmail(email)) {
+      setMessage("Por favor, ingresa un formato de correo electrónico válido.");
+      setMessageKind("error");
+      return;
+    }
 
     try {
       if (isLogin) {
