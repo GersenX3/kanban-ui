@@ -16,7 +16,65 @@ const Board = () => {
 
   const addColumn = () => {
     const newId = `col-${Date.now()}`;
-    setColumns([...columns, { id: newId, title: `Columna`, tasks: [] }]);
+    setColumns([...columns, { id: newId, title: `Nueva Columna`, tasks: [] }]);
+  };
+
+  const updateColumnTitle = (columnId, newTitle) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((col) =>
+        col.id === columnId ? { ...col, title: newTitle } : col
+      )
+    );
+  };
+
+  const deleteColumn = (columnId) => {
+    setColumns((prevColumns) =>
+      prevColumns.filter((col) => col.id !== columnId)
+    );
+  };
+
+  const moveColumnLeft = (columnId) => {
+    const currentIndex = columns.findIndex((col) => col.id === columnId);
+    if (currentIndex > 0) {
+      const newColumns = [...columns];
+      [newColumns[currentIndex - 1], newColumns[currentIndex]] = [
+        newColumns[currentIndex],
+        newColumns[currentIndex - 1],
+      ];
+      setColumns(newColumns);
+    }
+  };
+
+  const moveColumnRight = (columnId) => {
+    const currentIndex = columns.findIndex((col) => col.id === columnId);
+    if (currentIndex < columns.length - 1) {
+      const newColumns = [...columns];
+      [newColumns[currentIndex], newColumns[currentIndex + 1]] = [
+        newColumns[currentIndex + 1],
+        newColumns[currentIndex],
+      ];
+      setColumns(newColumns);
+    }
+  };
+
+  const updateTask = (taskId, newData) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) => ({
+        ...column,
+        tasks: column.tasks.map((task) =>
+          task.id === taskId ? { ...task, ...newData } : task
+        ),
+      }))
+    );
+  };
+
+  const deleteTask = (taskId) => {
+    setColumns((prevColumns) =>
+      prevColumns.map((column) => ({
+        ...column,
+        tasks: column.tasks.filter((task) => task.id !== taskId),
+      }))
+    );
   };
 
   const addTask = (columnId) => {
@@ -24,7 +82,7 @@ const Board = () => {
     const col = newColumns.find((c) => c.id === columnId);
     col.tasks.push({
       id: `t-${Date.now()}`,
-      text: `Nueva tarea t-${Date.now()}`,
+      text: `Nueva tarea`,
     });
     setColumns(newColumns);
   };
@@ -55,11 +113,22 @@ const Board = () => {
   };
 
   return (
-    <div style={{ marginTop: "8.5rem", display: "flex", gap: "1rem" }}>
+    <div style={{ marginTop: "4rem", display: "flex", gap: "1rem" }}>
       <DragDropContext onDragEnd={onDragEnd}>
-        {columns.map((col) => (
+        {columns.map((col, index) => (
           <CdsColumn key={col.id} sm={4} md={4} lg={4}>
-            <Column column={col} addTask={addTask} />
+            <Column
+              column={col}
+              addTask={addTask}
+              updateColumnTitle={updateColumnTitle}
+              deleteColumn={deleteColumn}
+              moveColumnLeft={moveColumnLeft}
+              moveColumnRight={moveColumnRight}
+              canMoveLeft={index > 0}
+              canMoveRight={index < columns.length - 1}
+              updateTask={updateTask}
+              deleteTask={deleteTask}
+            />
           </CdsColumn>
         ))}
       </DragDropContext>
