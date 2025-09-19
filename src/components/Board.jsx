@@ -1,18 +1,122 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext } from "@hello-pangea/dnd";
-import { Button, Column as CdsColumn } from "@carbon/react";
+import { Button, Column as CdsColumn, InlineLoading } from "@carbon/react";
 import Column from "./Column";
 
 const Board = () => {
-  const [columns, setColumns] = useState([
-    {
-      id: "col-1",
-      title: "Pendiente",
-      tasks: [{ id: "t-1", text: "Primera tarea" }],
-    },
-    { id: "col-2", title: "En progreso", tasks: [] },
-    { id: "col-3", title: "Hecho", tasks: [] },
-  ]);
+  const [columns, setColumns] = useState([]);
+  const [boardId, setBoardId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const token = localStorage.getItem("token");
+
+  // Cargar el tablero del usuario al inicializar
+  useEffect(() => {
+    loadUserBoard();
+  }, []);
+
+  // Debounce para guardar cambios automáticamente
+  useEffect(() => {
+    if (boardId && columns.length > 0) {
+      const timer = setTimeout(() => {
+        saveBoard();
+      }, 1000); // Guarda 1 segundo después del último cambio
+
+      return () => clearTimeout(timer);
+    }
+  }, [columns, boardId]);
+
+  const loadUserBoard = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/auth/boards", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const boards = await response.json();
+        if (boards.length > 0) {
+          // Cargar el primer tablero (por ahora manejamos un solo tablero por usuario)
+          const board = boards[0];
+          setBoardId(board.id);
+          setColumns(board.columns);
+        } else {
+          // Si no hay tableros, crear uno por defecto
+          await createDefaultBoard();
+        }
+      }
+    } catch (error) {
+      console.error("Error loading board:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createDefaultBoard = async () => {
+    try {
+      const defaultColumns = [
+        {
+          id: "col-1",
+          title: "Pendiente",
+          tasks: [{ id: "t-1", text: "Primera tarea" }],
+        },
+        { id: "col-2", title: "En progreso", tasks: [] },
+        { id: "col-3", title: "Hecho", tasks: [] },
+      ];
+
+      const response = await fetch("http://localhost:5000/auth/boards", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: "Mi Tablero Kanban",
+          columns: defaultColumns,
+        }),
+      });
+
+      if (response.ok) {
+        const newBoard = await response.json();
+        setBoardId(newBoard.id);
+        setColumns(newBoard.columns);
+      }
+    } catch (error) {
+      console.error("Error creating default board:", error);
+    }
+  };
+
+  const saveBoard = async () => {
+    if (!boardId) return;
+
+    setSaving(true);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/auth/boards/${boardId}/columns`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            columns: columns,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Error saving board:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error saving board:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const addColumn = () => {
     const newId = `col-${Date.now()}`;
@@ -112,6 +216,22 @@ const Board = () => {
     setColumns(newColumns);
   };
 
+  if (loading) {
+    return (
+      <div
+        style={{
+          marginTop: "4rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "300px",
+        }}
+      >
+        <InlineLoading description="Cargando tablero..." />
+      </div>
+    );
+  }
+
   return (
     <div style={{ marginTop: "4rem", display: "flex", gap: "1rem" }}>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -138,6 +258,23 @@ const Board = () => {
           + Añadir Columna
         </Button>
       </CdsColumn>
+
+      {/* Indicador de guardado */}
+      {saving && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "1rem",
+            right: "1rem",
+            background: "#393939",
+            padding: "0.5rem 1rem",
+            borderRadius: "4px",
+            color: "white",
+          }}
+        >
+          <InlineLoading description="Guardando..." />
+        </div>
+      )}
     </div>
   );
 };
