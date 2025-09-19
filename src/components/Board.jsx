@@ -60,11 +60,11 @@ const Board = () => {
       const defaultColumns = [
         {
           id: "col-1",
-          title: "Pendiente",
-          tasks: [{ id: "t-1", text: "Primera tarea" }],
+          title: "To Do",
+          tasks: [{ id: "t-1", text: "First Taks" }],
         },
-        { id: "col-2", title: "En progreso", tasks: [] },
-        { id: "col-3", title: "Hecho", tasks: [] },
+        { id: "col-2", title: "Progress", tasks: [] },
+        { id: "col-3", title: "Done", tasks: [] },
       ];
 
       const response = await fetch("http://localhost:5000/auth/boards", {
@@ -120,7 +120,7 @@ const Board = () => {
 
   const addColumn = () => {
     const newId = `col-${Date.now()}`;
-    setColumns([...columns, { id: newId, title: `Nueva Columna`, tasks: [] }]);
+    setColumns([...columns, { id: newId, title: `New Column`, tasks: [] }]);
   };
 
   const updateColumnTitle = (columnId, newTitle) => {
@@ -186,7 +186,7 @@ const Board = () => {
     const col = newColumns.find((c) => c.id === columnId);
     col.tasks.push({
       id: `t-${Date.now()}`,
-      text: `Nueva tarea`,
+      text: `New Task`,
     });
     setColumns(newColumns);
   };
@@ -227,7 +227,7 @@ const Board = () => {
           minHeight: "300px",
         }}
       >
-        <InlineLoading description="Cargando tablero..." />
+        <InlineLoading description="Loading..." />
       </div>
     );
   }
@@ -255,7 +255,7 @@ const Board = () => {
 
       <CdsColumn sm={4} md={4} lg={4}>
         <Button kind="secondary" onClick={addColumn}>
-          + Añadir Columna
+          + Add Column
         </Button>
       </CdsColumn>
 
@@ -272,7 +272,7 @@ const Board = () => {
             color: "white",
           }}
         >
-          <InlineLoading description="Guardando..." />
+          <InlineLoading description="Saving..." />
         </div>
       )}
     </div>
