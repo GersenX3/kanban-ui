@@ -29,7 +29,7 @@ const Board = () => {
 
   const loadUserBoard = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/boards", {
+      const response = await fetch("/auth/boards", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ const Board = () => {
         { id: "col-3", title: "Done", tasks: [] },
       ];
 
-      const response = await fetch("http://localhost:5000/auth/boards", {
+      const response = await fetch("/auth/boards", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const Board = () => {
     setSaving(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/auth/boards/${boardId}/columns`,
+        `/auth/boards/${boardId}/columns`,
         {
           method: "PUT",
           headers: {

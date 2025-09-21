@@ -60,7 +60,7 @@ const Dashboard = ({ user }) => {
         console.log("Enviando payload:", payload);
         console.log("Token:", token);
 
-        const res = await fetch("http://localhost:5000/auth/change-password", {
+        const res = await fetch("/auth/change-password", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -119,7 +119,7 @@ const Dashboard = ({ user }) => {
           return;
         }
 
-        const res = await fetch("http://localhost:5000/auth/delete-account", {
+        const res = await fetch("/auth/delete-account", {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
