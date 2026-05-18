@@ -3,6 +3,8 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import { Button, Column as CdsColumn, InlineLoading } from "@carbon/react";
 import Column from "./Column";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Board = () => {
   const [columns, setColumns] = useState([]);
   const [boardId, setBoardId] = useState(null);
@@ -29,7 +31,7 @@ const Board = () => {
 
   const loadUserBoard = async () => {
     try {
-      const response = await fetch("/auth/boards", {
+      const response = await fetch(`${API_URL}/auth/boards`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -67,7 +69,7 @@ const Board = () => {
         { id: "col-3", title: "Done", tasks: [] },
       ];
 
-      const response = await fetch("/auth/boards", {
+      const response = await fetch(`${API_URL}/auth/boards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +97,7 @@ const Board = () => {
     setSaving(true);
     try {
       const response = await fetch(
-        `/auth/boards/${boardId}/columns`,
+        `${API_URL}/auth/boards/${boardId}/columns`,
         {
           method: "PUT",
           headers: {

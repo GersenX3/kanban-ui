@@ -17,6 +17,8 @@ import {
 import { Logout, Switcher } from "@carbon/icons-react";
 import Board from "./Board";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Dashboard = ({ user }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -60,7 +62,7 @@ const Dashboard = ({ user }) => {
         console.log("Enviando payload:", payload);
         console.log("Token:", token);
 
-        const res = await fetch("/auth/change-password", {
+        const res = await fetch(`${API_URL}/auth/change-password`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -119,7 +121,7 @@ const Dashboard = ({ user }) => {
           return;
         }
 
-        const res = await fetch("/auth/delete-account", {
+        const res = await fetch(`${API_URL}/auth/delete-account`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",

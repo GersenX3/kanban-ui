@@ -11,7 +11,8 @@ import {
   Theme,
 } from "@carbon/react";
 
-// Main application component containing the login and sign-up page.
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginPage = ({ onLogin }) => {
   // State to manage the form's mode (login or sign-up)
   const [isLogin, setIsLogin] = useState(true);
@@ -42,7 +43,7 @@ const LoginPage = ({ onLogin }) => {
     try {
       if (isLogin) {
         // LOGIN
-        const response = await fetch("/auth/login", {
+        const response = await fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -67,7 +68,7 @@ const LoginPage = ({ onLogin }) => {
           return;
         }
 
-        const response = await fetch("/auth/register", {
+        const response = await fetch(`${API_URL}/auth/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
