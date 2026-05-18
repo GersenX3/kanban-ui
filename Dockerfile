@@ -35,3 +35,4 @@ EXPOSE 80
 
 # Comando por defecto (nginx se inicia automáticamente)
 CMD ["nginx", "-g", "daemon off;"]
+# IGNORE

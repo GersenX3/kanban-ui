@@ -3,6 +3,8 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import { Button, Column as CdsColumn, InlineLoading } from "@carbon/react";
 import Column from "./Column";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Board = () => {
   const [columns, setColumns] = useState([]);
   const [boardId, setBoardId] = useState(null);
@@ -29,7 +31,7 @@ const Board = () => {
 
   const loadUserBoard = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/boards", {
+      const response = await fetch(`${API_URL}/auth/boards`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -60,14 +62,14 @@ const Board = () => {
       const defaultColumns = [
         {
           id: "col-1",
-          title: "Pendiente",
-          tasks: [{ id: "t-1", text: "Primera tarea" }],
+          title: "To Do",
+          tasks: [{ id: "t-1", text: "First Taks" }],
         },
-        { id: "col-2", title: "En progreso", tasks: [] },
-        { id: "col-3", title: "Hecho", tasks: [] },
+        { id: "col-2", title: "Progress", tasks: [] },
+        { id: "col-3", title: "Done", tasks: [] },
       ];
 
-      const response = await fetch("http://localhost:5000/auth/boards", {
+      const response = await fetch(`${API_URL}/auth/boards`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -95,7 +97,7 @@ const Board = () => {
     setSaving(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/auth/boards/${boardId}/columns`,
+        `${API_URL}/auth/boards/${boardId}/columns`,
         {
           method: "PUT",
           headers: {
@@ -120,7 +122,7 @@ const Board = () => {
 
   const addColumn = () => {
     const newId = `col-${Date.now()}`;
-    setColumns([...columns, { id: newId, title: `Nueva Columna`, tasks: [] }]);
+    setColumns([...columns, { id: newId, title: `New Column`, tasks: [] }]);
   };
 
   const updateColumnTitle = (columnId, newTitle) => {
@@ -186,7 +188,7 @@ const Board = () => {
     const col = newColumns.find((c) => c.id === columnId);
     col.tasks.push({
       id: `t-${Date.now()}`,
-      text: `Nueva tarea`,
+      text: `New Task`,
     });
     setColumns(newColumns);
   };
@@ -227,7 +229,7 @@ const Board = () => {
           minHeight: "300px",
         }}
       >
-        <InlineLoading description="Cargando tablero..." />
+        <InlineLoading description="Loading..." />
       </div>
     );
   }
@@ -255,7 +257,7 @@ const Board = () => {
 
       <CdsColumn sm={4} md={4} lg={4}>
         <Button kind="secondary" onClick={addColumn}>
-          + Añadir Columna
+          + Add Column
         </Button>
       </CdsColumn>
 
@@ -272,7 +274,7 @@ const Board = () => {
             color: "white",
           }}
         >
-          <InlineLoading description="Guardando..." />
+          <InlineLoading description="Saving..." />
         </div>
       )}
     </div>

@@ -51,7 +51,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
         }
       );
 
-      if (!response.ok) throw new Error("Error al obtener recomendación");
+      if (!response.ok) throw new Error("Error fetching from Spotify");
 
       const data = await response.json();
 
@@ -68,13 +68,13 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
         });
       } else {
         updateTask(task.id, {
-          musicRecommendation: { error: "No se encontraron recomendaciones" },
+          musicRecommendation: { error: "No recomendation" },
         });
       }
     } catch (error) {
       console.error("Error:", error);
       updateTask(task.id, {
-        musicRecommendation: { error: "Error al obtener recomendación" },
+        musicRecommendation: { error: "Error" },
       });
     } finally {
       setLoadingMusic(false);
@@ -157,7 +157,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
                   kind="secondary"
                   size="sm"
                   renderIcon={Music}
-                  iconDescription="Obtener recomendación musical"
+                  iconDescription="Get music recommendation"
                   hasIconOnly
                   onClick={(e) => {
                     e.stopPropagation();
@@ -172,7 +172,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
                 kind="ghost"
                 size="sm"
                 renderIcon={Edit}
-                iconDescription="Editar tarea"
+                iconDescription="Edit task"
                 hasIconOnly
                 onClick={(e) => {
                   e.stopPropagation();
@@ -187,7 +187,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
                 kind="danger--ghost"
                 size="sm"
                 renderIcon={TrashCan}
-                iconDescription="Eliminar tarea"
+                iconDescription="Delete task"
                 hasIconOnly
                 onClick={(e) => {
                   e.stopPropagation();
@@ -218,7 +218,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
               onClick={handleSaveTask}
               style={{ width: "100%" }}
             >
-              Guardar
+              Save
             </Button>
             <Button
               kind="ghost"
@@ -226,7 +226,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
               onClick={handleCancelEdit}
               style={{ width: "100%" }}
             >
-              Cancelar
+              Cancel
             </Button>
           </div>
         )}

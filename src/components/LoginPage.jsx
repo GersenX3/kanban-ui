@@ -11,7 +11,8 @@ import {
   Theme,
 } from "@carbon/react";
 
-// Main application component containing the login and sign-up page.
+const API_URL = import.meta.env.VITE_API_URL;
+
 const LoginPage = ({ onLogin }) => {
   // State to manage the form's mode (login or sign-up)
   const [isLogin, setIsLogin] = useState(true);
@@ -34,7 +35,7 @@ const LoginPage = ({ onLogin }) => {
 
     // ✅ Validación del formato del email
     if (!validateEmail(email)) {
-      setMessage("Por favor, ingresa un formato de correo electrónico válido.");
+      setMessage("Please use a valid email.");
       setMessageKind("error");
       return;
     }
@@ -42,7 +43,7 @@ const LoginPage = ({ onLogin }) => {
     try {
       if (isLogin) {
         // LOGIN
-        const response = await fetch("http://localhost:5000/auth/login", {
+        const response = await fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -52,22 +53,22 @@ const LoginPage = ({ onLogin }) => {
 
         if (response.ok) {
           localStorage.setItem("token", data.access_token); // guarda el JWT
-          setMessage("¡Inicio de sesión exitoso!");
+          setMessage("¡Log in success!");
           setMessageKind("success");
           if (onLogin) onLogin();
         } else {
-          setMessage(data.msg || "Error al iniciar sesión.");
+          setMessage(data.msg || "Log in error.");
           setMessageKind("error");
         }
       } else {
         // REGISTER
         if (password !== confirmPassword) {
-          setMessage("Error: Las contraseñas no coinciden.");
+          setMessage("Error: Passwords don't match.");
           setMessageKind("error");
           return;
         }
 
-        const response = await fetch("http://localhost:5000/auth/register", {
+        const response = await fetch(`${API_URL}/auth/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -76,17 +77,17 @@ const LoginPage = ({ onLogin }) => {
         const data = await response.json();
 
         if (response.ok) {
-          setMessage("¡Registro exitoso! Ahora puedes iniciar sesión.");
+          setMessage("Sign up successful! Please log in.");
           setMessageKind("success");
           setIsLogin(true); // pasa al formulario de login
         } else {
-          setMessage(data.msg || "Error al registrarse.");
+          setMessage(data.msg || "Sign up failed.");
           setMessageKind("error");
         }
       }
     } catch (err) {
       console.error(err);
-      setMessage("Error de conexión con el servidor.");
+      setMessage("Server connection error.");
       setMessageKind("error");
     }
   };
@@ -127,22 +128,22 @@ const LoginPage = ({ onLogin }) => {
                   className="cds--type-alpha"
                   style={{ marginBottom: "1rem" }}
                 >
-                  {isLogin ? "Iniciar Sesión" : "Registrarse"}
+                  {isLogin ? "Login" : "Sign Up"}
                 </h2>
 
                 <Form onSubmit={handleSubmit}>
                   <FormGroup>
                     <TextInput
                       id="email"
-                      labelText="Correo electrónico"
+                      labelText="Email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ejemplo@correo.com"
+                      placeholder="example@email.com"
                       style={{ marginBottom: "1.5rem" }}
                     />
                     <PasswordInput
                       id="password"
-                      labelText="Contraseña"
+                      labelText="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -150,7 +151,7 @@ const LoginPage = ({ onLogin }) => {
                     {!isLogin && (
                       <PasswordInput
                         id="confirm-password"
-                        labelText="Confirmar Contraseña"
+                        labelText="Confirm password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                       />
@@ -163,7 +164,7 @@ const LoginPage = ({ onLogin }) => {
                       type="submit"
                       style={{ width: "100%", marginTop: "1rem" }}
                     >
-                      {isLogin ? "Iniciar Sesión" : "Registrarse"}
+                      {isLogin ? "Login" : "Sign Up"}
                     </Button>
                   </div>
                 </Form>
@@ -171,11 +172,11 @@ const LoginPage = ({ onLogin }) => {
                 <div style={{ marginTop: "1rem", textAlign: "center" }}>
                   {isLogin ? (
                     <Link href="#" onClick={handleToggleForm}>
-                      ¿No tienes una cuenta? Regístrate.
+                      Don't have an account? Sign up.
                     </Link>
                   ) : (
                     <Link href="#" onClick={handleToggleForm}>
-                      ¿Ya tienes una cuenta? Inicia sesión.
+                      Do you have an account? Log in.
                     </Link>
                   )}
                 </div>
@@ -197,7 +198,7 @@ const LoginPage = ({ onLogin }) => {
               kind={messageKind}
               lowContrast={true}
               subtitle={message}
-              title={messageKind === "error" ? "Error" : "Éxito"}
+              title={messageKind === "error" ? "Error" : "Success"}
               onCloseButtonClick={() => setMessage(null)}
             />
           )}

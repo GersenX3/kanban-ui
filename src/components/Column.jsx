@@ -138,21 +138,21 @@ const Column = ({
 
           <OverflowMenu renderIcon={OverflowMenuHorizontal} size="sm" flipped>
             <OverflowMenuItem
-              itemText="Mover a la izquierda"
+              itemText="Move to the left"
               onClick={() => moveColumnLeft(column.id)}
               disabled={!canMoveLeft}
             />
             <OverflowMenuItem
-              itemText="Mover a la derecha"
+              itemText="Move to the right"
               onClick={() => moveColumnRight(column.id)}
               disabled={!canMoveRight}
             />
             <OverflowMenuItem
-              itemText="Editar nombre"
+              itemText="Edit"
               onClick={() => setIsEditing(true)}
             />
             <OverflowMenuItem
-              itemText="Eliminar columna"
+              itemText="Delete"
               isDelete
               onClick={() => setShowDeleteModal(true)}
             />
@@ -207,7 +207,7 @@ const Column = ({
           style={{ marginTop: "1rem" }}
           onClick={() => addTask(column.id)}
         >
-          + Añadir Tarea
+          + Add Task
         </Button>
       </Tile>
 
@@ -216,10 +216,10 @@ const Column = ({
         open={showDeleteModal}
         onRequestClose={() => setShowDeleteModal(false)}
         onRequestSubmit={handleDeleteConfirm}
-        modalHeading="Eliminar columna"
-        modalLabel="Confirmación"
-        primaryButtonText="Eliminar"
-        secondaryButtonText="Cancelar"
+        modalHeading="Delete Column"
+        modalLabel="Confirmatión"
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
         danger
       >
         <p>
@@ -249,10 +249,10 @@ const Column = ({
           setTaskToDelete(null);
         }}
         onRequestSubmit={handleTaskDeleteConfirm}
-        modalHeading="Eliminar tarea"
-        modalLabel="Confirmación"
-        primaryButtonText="Eliminar"
-        secondaryButtonText="Cancelar"
+        modalHeading="Delete Task"
+        modalLabel="Confirmatión"
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
         danger
         size="sm"
       >

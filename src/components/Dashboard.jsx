@@ -17,6 +17,8 @@ import {
 import { Logout, Switcher } from "@carbon/icons-react";
 import Board from "./Board";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const Dashboard = ({ user }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -40,14 +42,14 @@ const Dashboard = ({ user }) => {
       // Lógica para cambiar la contraseña
       if (newPassword && confirmPassword) {
         if (newPassword !== confirmPassword) {
-          setMessage("Las contraseñas no coinciden.");
+          setMessage("Passwords don't match.");
           setMessageKind("error");
           return;
         }
 
         // Validación adicional en el frontend
         if (newPassword.length < 6) {
-          setMessage("La contraseña debe tener al menos 6 caracteres.");
+          setMessage("At least 6 characters.");
           setMessageKind("error");
           return;
         }
@@ -60,7 +62,7 @@ const Dashboard = ({ user }) => {
         console.log("Enviando payload:", payload);
         console.log("Token:", token);
 
-        const res = await fetch("http://localhost:5000/auth/change-password", {
+        const res = await fetch(`${API_URL}/auth/change-password`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -114,12 +116,12 @@ const Dashboard = ({ user }) => {
       // Lógica para eliminar la cuenta
       if (deleteEmail && confirmDelete) {
         if (!deleteEmail.includes("@")) {
-          setMessage("Por favor, introduce un email válido.");
+          setMessage("Please use a valid email.");
           setMessageKind("error");
           return;
         }
 
-        const res = await fetch("http://localhost:5000/auth/delete-account", {
+        const res = await fetch(`${API_URL}/auth/delete-account`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -130,7 +132,7 @@ const Dashboard = ({ user }) => {
 
         if (!res.ok) {
           if (res.status === 401) {
-            setMessage("Sesión expirada. Por favor, inicia sesión nuevamente.");
+            setMessage("Please, log in again.");
             setMessageKind("error");
             handleLogout();
             return;
@@ -150,11 +152,11 @@ const Dashboard = ({ user }) => {
       }
 
       // Si no se llenó ningún campo, muestra un mensaje de advertencia
-      setMessage("Por favor, llena los campos para actualizar tu información.");
+      setMessage("Please fill correctly the form.");
       setMessageKind("warning");
     } catch (err) {
       console.error("Error:", err);
-      setMessage("Error de conexión con el servidor");
+      setMessage("Connection error. Please try again later.");
       setMessageKind("error");
     }
   }
@@ -174,7 +176,7 @@ const Dashboard = ({ user }) => {
       <Grid fullWidth style={{ minHeight: "100vh", padding: "0" }}>
         <Header style={{ color: "white" }}>
           <HeaderName href="#" prefix="Kanban Board - ">
-            Bienvenido {user}
+            Welcome {user}
           </HeaderName>
           <HeaderGlobalBar>
             <HeaderGlobalAction
@@ -209,22 +211,22 @@ const Dashboard = ({ user }) => {
       >
         <div style={{ marginBottom: "1rem" }}>
           <h4 style={{ marginBottom: "0.5rem", color: "#f4f4f4" }}>
-            Cambiar Contraseña
+            Change Password
           </h4>
           <PasswordInput
             id="new-password"
-            labelText="Nueva Contraseña"
+            labelText="New Password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Introduce nueva contraseña"
+            placeholder="New Password"
           />
           <br />
           <PasswordInput
             id="confirm-password"
-            labelText="Confirmar Contraseña"
+            labelText="Confirm New Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirma nueva contraseña"
+            placeholder="Confirm New Password"
           />
         </div>
 
@@ -236,19 +238,19 @@ const Dashboard = ({ user }) => {
           }}
         >
           <h4 style={{ marginBottom: "0.5rem", color: "#da1e28" }}>
-            Eliminar Cuenta (¡Peligro!)
+            Delete Account (¡Danger!)
           </h4>
           <TextInput
             id="delete-email"
-            labelText="Email de Confirmación"
+            labelText="Confirm with your email"
             value={deleteEmail}
             onChange={(e) => setDeleteEmail(e.target.value)}
-            placeholder="Introduce tu email para confirmar"
+            placeholder="Write your email to confirm"
           />
           <br />
           <Checkbox
             id="confirm-delete"
-            labelText="Entiendo que esta acción es irreversible"
+            labelText="I understand that this action cannot be undone."
             checked={confirmDelete}
             onChange={(e, { checked }) => setConfirmDelete(checked)}
           />
@@ -264,7 +266,7 @@ const Dashboard = ({ user }) => {
             messageKind === "error"
               ? "Error"
               : messageKind === "success"
-              ? "Éxito"
+              ? "Success"
               : "Información"
           }
           onCloseButtonClick={() => setMessage(null)}
