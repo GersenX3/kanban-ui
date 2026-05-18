@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tile, TextArea, Button } from "@carbon/react";
 import { Edit, TrashCan, Music } from "@carbon/icons-react";
 
-const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
+const Card = ({ task, updateTask, onDeleteRequest }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(task.text);
   const [loadingMusic, setLoadingMusic] = useState(false);
@@ -39,36 +39,26 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
     setLoadingMusic(true);
     try {
       const response = await fetch(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-          task.text
-        )}&type=track&limit=1`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + spotifyToken,
-          },
-        }
+        `https://itunes.apple.com/search?term=${encodeURIComponent(task.text)}&media=music&limit=1`
       );
 
-      if (!response.ok) throw new Error("Error fetching from Spotify");
+      if (!response.ok) throw new Error("iTunes API error");
 
       const data = await response.json();
 
-      if (data.tracks?.items?.length > 0) {
-        const track = data.tracks.items[0];
+      if (data.resultCount > 0) {
+        const track = data.results[0];
         updateTask(task.id, {
           musicRecommendation: {
-            name: track.name,
-            artist: track.artists[0].name,
-            albumImage:
-              track.album.images[2]?.url || track.album.images[0]?.url,
-            spotifyUrl: track.external_urls.spotify,
+            name: track.trackName,
+            artist: track.artistName,
+            albumImage: track.artworkUrl100,
+            spotifyUrl: track.trackViewUrl,
           },
         });
       } else {
         updateTask(task.id, {
-          musicRecommendation: { error: "No recomendation" },
+          musicRecommendation: { error: "No recommendation" },
         });
       }
     } catch (error) {
@@ -163,7 +153,7 @@ const Card = ({ task, updateTask, onDeleteRequest, spotifyToken }) => {
                     e.stopPropagation();
                     handleGetMusicRecommendation();
                   }}
-                  disabled={loadingMusic || !spotifyToken}
+                  disabled={loadingMusic}
                   style={{ minHeight: "2rem", width: "2rem" }}
                 />
               )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import {
   Tile,
@@ -34,32 +34,6 @@ const Column = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleteTaskModal, setShowDeleteTaskModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
-  const [accessToken, setAccessToken] = useState("");
-  const CLIENT_ID = "3d54c01d2ee3455caf43fad4b846dcf6";
-  const CLIENT_SECRECT = "873c7e341f534ee68e9d86a6c1cd46d0";
-  useEffect(
-    // API access token
-    () => {
-      var authParameters = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body:
-          "grant_type=client_credentials&client_id=" +
-          CLIENT_ID +
-          "&client_secret=" +
-          CLIENT_SECRECT,
-      };
-
-      fetch("https://accounts.spotify.com/api/token", authParameters)
-        .then((result) => result.json())
-        .then((data) => {
-          setAccessToken(data.access_token);
-        });
-    },
-    []
-  );
 
   const handleSaveTitle = () => {
     if (editTitle.trim() !== "") {
@@ -189,7 +163,7 @@ const Column = ({
                         task={task}
                         updateTask={updateTask}
                         onDeleteRequest={handleTaskDeleteRequest}
-                        spotifyToken={accessToken}
+                        
                       />
                     </div>
                   )}
